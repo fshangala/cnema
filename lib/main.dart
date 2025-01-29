@@ -13,14 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        listTileTheme: ListTileTheme.of(context).copyWith(
-          textColor: Colors.white,
-        ),
-        dialogTheme: DialogTheme.of(context).copyWith(
-          contentTextStyle: TextStyle(color: Colors.black),
-        ),
+      theme: ThemeData(
+        colorSchemeSeed: Colors.red,
       ),
       initialRoute: '/',
       onGenerateRoute: (settings) {

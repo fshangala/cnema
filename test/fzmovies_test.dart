@@ -11,4 +11,11 @@ void main() {
       Logger().i(movies.toString());
     },
   );
+
+  test("Download links test", () async {
+    final fzmovies = Fzmovies();
+    final movies = await fzmovies.getMovies();
+    final downloadLinks = await fzmovies.getDownloadLinks(movies[0]);
+    Logger().i(downloadLinks);
+  });
 }
