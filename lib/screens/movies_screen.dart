@@ -1,9 +1,8 @@
 import 'package:cnema/models/movie_model.dart';
 import 'package:cnema/scrapers/fzmovies.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -14,28 +13,24 @@ class MoviesScreen extends StatefulWidget {
 
 class _MoviesScreenState extends State<MoviesScreen> {
   final fzmovies = Fzmovies();
-  ValueNotifier<double> downloadProgress = ValueNotifier(0.0);
 
   var page = 1;
 
   Future<void> downloadMovie(String downloadLink, String name) async {
-    final savePath =
-        "${(await getApplicationDocumentsDirectory()).path}/$name.mp4";
-    await Dio().download(
-      downloadLink,
-      savePath,
-      onReceiveProgress: (count, total) {
-        downloadProgress.value = count / total;
-      },
-    );
-    downloadProgress.value = 0.0;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Downloaded $name"),
-        ),
+    final url = Uri.parse(downloadLink);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (timestamp) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Faild to launch url: $url"),
+            ),
+          );
+        },
       );
-    });
+    }
   }
 
   showMovieDialog(MovieModel movie) {
@@ -106,19 +101,6 @@ class _MoviesScreenState extends State<MoviesScreen> {
         child: Column(
           spacing: 8.0,
           children: [
-            ValueListenableBuilder(
-              valueListenable: downloadProgress,
-              builder: (context, value, child) {
-                if (value == 0.0) return const SizedBox();
-                return ListTile(
-                  leading: Text("${(value * 100).floor()} %"),
-                  title: Text("Download Progress"),
-                  subtitle: LinearProgressIndicator(
-                    value: value,
-                  ),
-                );
-              },
-            ),
             FutureBuilder(
               future: fzmovies.getMovies(page: page),
               builder: (context, snapshot) {
