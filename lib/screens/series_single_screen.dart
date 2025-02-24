@@ -64,7 +64,67 @@ class _SeriesSingleScreenState extends State<SeriesSingleScreen> {
                                                   .map<Widget>((episode) {
                                                 return ListTile(
                                                   title: Text(episode.title),
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                              episode.title),
+                                                          content:
+                                                              FutureBuilder(
+                                                            future: tvSeriesIn
+                                                                .getEpisodeDownloadLinks(
+                                                                    episodeLink:
+                                                                        episode
+                                                                            .link),
+                                                            builder: (context,
+                                                                snapshot) {
+                                                              if (snapshot
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .waiting) {
+                                                                return const CircularProgressIndicator();
+                                                              } else if (snapshot
+                                                                  .hasData) {
+                                                                return Column(
+                                                                  children: snapshot
+                                                                      .data!
+                                                                      .map<Widget>(
+                                                                          (link) {
+                                                                    return ListTile(
+                                                                      title: Text(
+                                                                          link),
+                                                                      onTap:
+                                                                          () {},
+                                                                    );
+                                                                  }).toList(),
+                                                                );
+                                                              } else if (snapshot
+                                                                  .hasError) {
+                                                                return Text(snapshot
+                                                                    .error
+                                                                    .toString());
+                                                              } else {
+                                                                return const Text(
+                                                                    "Nothing to show!");
+                                                              }
+                                                            },
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child:
+                                                                  Text("Close"),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
                                                 );
                                               }).toList(),
                                             ),

@@ -3,6 +3,7 @@ import 'package:cnema/models/season_model.dart';
 import 'package:cnema/models/series_model.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class TvSeriesIn {
   static final String baseUrl = "https://tvseries.in";
@@ -82,6 +83,50 @@ class TvSeriesIn {
       }).toList();
 
       return episodes;
+    } else {
+      throw Exception("Response error: ${response.statusCode}");
+    }
+  }
+
+  Future<List<String>> getEpisodeDownloadLinks(
+      {required String episodeLink}) async {
+    final client = http.Client();
+    String? cookies;
+
+    var response = await client.get(Uri.parse(episodeLink));
+    if (response.statusCode == 200) {
+      var document = parser.parse(response.body);
+      var downloadLinksPage = document.getElementById("downloadlink");
+      cookies = response.headers["set-cookie"] ?? cookies;
+      Logger().i(
+          "downloadlink:${downloadLinksPage?.outerHtml}\n\nCookies:$cookies");
+
+      if (downloadLinksPage != null) {
+        Logger()
+            .d("${TvSeriesIn.baseUrl}/${downloadLinksPage.attributes['href']}");
+        response = await client.get(
+          Uri.parse(
+              "${TvSeriesIn.baseUrl}/${downloadLinksPage.attributes['href']}"),
+          headers: {"Cookie": cookies ?? ""},
+        );
+        if (response.statusCode == 200) {
+          document = parser.parse(response.body);
+          var downloadLinks =
+              document.querySelectorAll("input[name='download1']");
+          cookies = response.headers["set-cookie"] ?? cookies;
+          Logger()
+              .i("input[name='download1']:$downloadLinks\n\nCookies:$cookies");
+          return downloadLinks
+              .map(
+                (downloadLink) => downloadLink.attributes["value"] as String,
+              )
+              .toList();
+        } else {
+          throw Exception("Response error: ${response.statusCode}");
+        }
+      } else {
+        throw Exception("Response error: Download links page not found!");
+      }
     } else {
       throw Exception("Response error: ${response.statusCode}");
     }
