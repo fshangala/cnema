@@ -11,6 +11,8 @@ class SeriesScreen extends StatefulWidget {
 class _SeriesScreenState extends State<SeriesScreen> {
   final tvseriesin = TvSeriesIn();
 
+  var page = 1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,11 +24,11 @@ class _SeriesScreenState extends State<SeriesScreen> {
         child: Column(
           children: [
             FutureBuilder(
-              future: tvseriesin.getShows(),
+              future: tvseriesin.getShows(page: page),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
-                } else {
+                } else if (snapshot.hasData) {
                   return Expanded(
                     child: ListView.builder(
                       itemCount: snapshot.data!.length,
@@ -41,8 +43,39 @@ class _SeriesScreenState extends State<SeriesScreen> {
                       },
                     ),
                   );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                } else {
+                  return const Text("Nothing to show!");
                 }
               },
+            ),
+            Row(
+              spacing: 8.0,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      page--;
+                      if (page < 1) page = 1;
+                    });
+                  },
+                  label: Text("Previous"),
+                  icon: Icon(Icons.chevron_left),
+                ),
+                Text("Page $page"),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      page++;
+                    });
+                  },
+                  label: const Text('Next'),
+                  icon: Icon(Icons.chevron_right),
+                  iconAlignment: IconAlignment.end,
+                ),
+              ],
             ),
           ],
         ),
