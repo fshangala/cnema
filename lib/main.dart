@@ -1,5 +1,6 @@
 import 'package:cnema/screens/home_screen.dart';
 import 'package:cnema/screens/movies_screen.dart';
+import 'package:cnema/screens/series_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,6 +24,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/movies':
             return MaterialPageRoute(builder: (_) => const MoviesScreen());
+          case '/tvseries':
+            return MaterialPageRoute(builder: (_) => const SeriesScreen());
           default:
             return MaterialPageRoute(builder: (_) => const HomeScreen());
         }

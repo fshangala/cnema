@@ -17,16 +17,15 @@ class TvSeriesIn {
         serie = serie.parent!.parent!.parent!.parent!;
         final link = serie.children[0].querySelector("a")?.attributes["href"];
         final image = serie.children[0].querySelector("img")?.attributes["src"];
-
-        final detailMarkup = serie.children[1].querySelector("span");
-        final title = detailMarkup?.children[0].text;
-        final description = detailMarkup?.children[1].text;
+        final title = serie.children[1].querySelector("span a")?.text;
+        final description =
+            serie.children[1].querySelectorAll("span small")[2].text;
 
         return SeriesModel(
           title: title!,
-          link: link!,
-          image: image!,
-          description: description!,
+          link: "$baseUrl/$link",
+          image: "$baseUrl/$image",
+          description: description,
         );
       }).toList();
 

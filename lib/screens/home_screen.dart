@@ -16,13 +16,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          spacing: 8.0,
+        child: ListView(
           children: [
             ListTile(
-              title: const Text("Movies"),
+              leading: const Icon(Icons.movie),
+              title: const Text('Movies'),
               onTap: () {
                 Navigator.pushNamed(context, '/movies');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.tv),
+              title: const Text('TV Series'),
+              onTap: () {
+                Navigator.pushNamed(context, '/tvseries');
               },
             ),
           ],

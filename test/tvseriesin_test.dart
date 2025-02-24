@@ -8,7 +8,7 @@ void main() {
     () async {
       final tvseriesin = TvSeriesIn();
       final tvseries = await tvseriesin.getShows();
-      Logger().i(tvseries.toString());
+      Logger().i(tvseries[0].toString());
     },
   );
 }
