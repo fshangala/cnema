@@ -38,7 +38,13 @@ class _SeriesScreenState extends State<SeriesScreen> {
                           leading: Image.network(show.image),
                           title: Text(show.title),
                           subtitle: Text(show.description),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/tvseries/single',
+                              arguments: {'show': show},
+                            );
+                          },
                         );
                       },
                     ),
